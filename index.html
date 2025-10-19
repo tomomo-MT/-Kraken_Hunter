@@ -29,6 +29,7 @@ const stageHeight = 800;
 
 // プレイヤー
 let player = { x: 200, y: 600, w: 64, h: 64, speed: 5, hp: 20 };
+let playerFlash = 0;
 const playerImg = new Image();
 playerImg.src = "player.png";
 
@@ -62,7 +63,7 @@ let obstacles = [
 
 // 毒
 let poisonMargin = 0;
-const poisonSpeed = 0.1; // 遅め
+const poisonSpeed = 0.05; // 遅め
 
 // 障害物更新
 function updateObstacles(){
@@ -95,7 +96,8 @@ function updatePoison(){
   poisonMargin += poisonSpeed;
   if(player.x < poisonMargin || player.x + player.w > stageWidth - poisonMargin ||
      player.y < poisonMargin || player.y + player.h > stageHeight - poisonMargin){
-    player.hp -= 0.1;
+    player.hp -= 0.01;
+    playerFlash = 3;
     if(player.hp <= 0) gameOver();
   }
 }
@@ -202,7 +204,7 @@ function update(){
   enemyBullets.forEach(b=>{
     b.x+=b.vx; b.y+=b.vy;
     if(obstacles.some(obs=>circleRectHit(b,obs))) b.x=-100;
-    if(circleRectHit(b,player)){ b.x=-100; player.hp-=b.attack; if(player.hp<=0) gameOver(); }
+    if(circleRectHit(b,player)){ b.x=-100; player.hp-=b.attack; playerFlash = 5; if(player.hp<=0) gameOver(); }
   });
   enemyBullets = enemyBullets.filter(b=>b.x>0 && b.x<stageWidth && b.y>0 && b.y<stageHeight);
 
@@ -229,7 +231,7 @@ function update(){
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  ctx.fillStyle = "rgba(128,0,0,0.3)";
+  ctx.fillStyle = "rgba(128,0,128,0.5)";
   ctx.fillRect(0-scrollX,0-scrollY,stageWidth,poisonMargin);
   ctx.fillRect(0-scrollX,stageHeight-poisonMargin-scrollY,stageWidth,poisonMargin);
   ctx.fillRect(0-scrollX,0-scrollY,poisonMargin,stageHeight);
@@ -249,13 +251,13 @@ function draw(){
     }
   });
 
-  ctx.fillStyle="yellow";
+  ctx.fillStyle="blue";
   bullets.forEach(b=>{ ctx.beginPath(); ctx.arc(b.x-scrollX,b.y-scrollY,b.r,0,Math.PI*2); ctx.fill(); });
 
   enemyBullets.forEach(b=>{
     ctx.beginPath();
     ctx.arc(b.x-scrollX,b.y-scrollY,b.r* (b.type==="boss"?2:1),0,Math.PI*2);
-    ctx.fillStyle= b.type==="boss"? "yellow":"red";
+    ctx.fillStyle= b.type==="boss"? "red":"black";
     ctx.fill();
   });
 
@@ -265,13 +267,22 @@ function draw(){
     ctx.strokeStyle = "rgba(255,165,0,0.3)";
     ctx.lineWidth = 3;
     ctx.stroke();
+    ctx.fillStyle = "orange";
     ctx.beginPath();
-    ctx.arc(b.x-scrollX,b.y-scrollY,b.r,0,Math.PI*2);
-    ctx.fillStyle="orange";
+    ctx.moveTo(b.x - b.r - scrollX, b.y - scrollY); // 左
+    ctx.lineTo(b.x - scrollX, b.y - b.r - scrollY); // 上
+    ctx.lineTo(b.x + b.r - scrollX, b.y - scrollY); // 右
+    ctx.lineTo(b.x - scrollX, b.y + b.r - scrollY); // 下
+    ctx.closePath();
     ctx.fill();
   });
+    ctx.drawImage(playerImg, player.x-scrollX, player.y-scrollY, player.w, player.h);
 
-  ctx.drawImage(playerImg, player.x-scrollX, player.y-scrollY, player.w, player.h);
+    if(playerFlash > 0){
+      ctx.fillStyle = "rgba(255,0,0,0.5)";
+      ctx.fillRect(player.x - scrollX, player.y - scrollY, player.w, player.h);
+      playerFlash--;
+    }
 
   ctx.fillStyle="white";
   ctx.font="20px sans-serif";
