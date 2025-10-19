@@ -10,18 +10,6 @@
 </head>
 <body>
 <canvas id="game" width="800" height="400"></canvas>
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>横スクロールゲーム</title>
-<style>
-  body { margin: 0; overflow: hidden; background: skyblue; }
-  canvas { display: block; margin: auto; background: #70c5ce; }
-</style>
-</head>
-<body>
-<canvas id="game" width="800" height="400"></canvas>
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -59,10 +47,19 @@ let frame = 0;
 let score = 0;
 let hitCount = 0;  // 当たった回数
 
-// 入力
+// 入力（スペースキー）
 document.addEventListener("keydown", e => {
   if (e.code === "Space" && !player.jump) {
-    player.vy = -20;  // ジャンプ力2倍
+    player.vy = -40;  // ジャンプ力2倍
+    player.jump = true;
+  }
+});
+
+// 入力（タッチ）
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  if (!player.jump) {
+    player.vy = -40;  // ジャンプ力2倍
     player.jump = true;
   }
 });
@@ -88,21 +85,21 @@ function update() {
   frame++;
 
   // ジャンプと重力
-  player.vy += 0.3;
+  player.vy += 0.5;   // 重力
   player.y += player.vy;
   if (player.y > 300) {
     player.y = 300;
     player.jump = false;
   }
 
-  // 敵生成
+  // 敵生成（出現回数半分）
   if (frame % 300 === 0) {
     const imgIndex = Math.floor(Math.random() * enemyImgs.length);
     enemies.push({
       x: 800,
       y: 270,
-      w: 120,
-      h: 120,
+      w: 64,
+      h: 64,
       dir: Math.random() < 0.5 ? 1 : -1,
       img: enemyImgs[imgIndex]
     });
@@ -160,6 +157,8 @@ function loop() {
 
 loop();
 </script>
+</body>
+</html>
 </body>
 </html>
 </body>
