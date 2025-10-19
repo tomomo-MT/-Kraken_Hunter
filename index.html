@@ -33,11 +33,11 @@ const playerImg = new Image();
 playerImg.src = "player.png";
 
 // 敵画像
-const enemyImgs = { boss:new Image(), z1:new Image(), z2:new Image() };
-enemyImgs.boss.src = "enemy1.png";
+const enemyImgs = { boss:new Image(), z1:new Image(), z2:new Image(), z3:new Image() };
+enemyImgs.boss.src = "boss.png";
 enemyImgs.z1.src = "enemy2.png";
 enemyImgs.z2.src = "enemy3.png";
-
+enemyImgs.z3.src = "enemy4.png";
 // 弾
 let bullets = [];
 let enemyBullets = [];
@@ -47,7 +47,8 @@ let specialBullets = [];
 let enemies = [
   { type:"boss", x:1200, y:150, baseY:150, w:96, h:96, hp:100, attack:5, img:enemyImgs.boss },
   { type:"z1", x:1100, y:500, baseY:500, w:64, h:64, hp:30, attack:1, img:enemyImgs.z1 },
-  { type:"z2", x:1350, y:550, baseY:550, w:64, h:64, hp:30, attack:2, img:enemyImgs.z2 }
+  { type:"z2", x:1350, y:550, baseY:550, w:64, h:64, hp:30, attack:2, img:enemyImgs.z2 },
+  { type:"z3", x:800, y:550, baseY:550, w:64, h:64, hp:30, attack:2, img:enemyImgs.z3 }
 ];
 
 // 障害物
